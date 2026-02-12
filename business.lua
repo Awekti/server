@@ -1,0 +1,93 @@
+bankBalance = 1000
+
+-- Функция: Проверка баланса банка (команда /bank)
+addCommandHandler("bank", function(player)
+    outputChatBox("Текущий баланс банка штата: $" .. bankBalance, player, 255, 200, 0)
+end)
+
+-------------КАФЕШКА------------------------------------------------------
+local m1x, m1y, m1z = 1366.39, 248.8, 18.5
+local marker1 = createMarker(m1x, m1y, m1z, "cylinder", 1.5, 255, 255, 0, 150)
+
+addEvent("onPlayerBuyFood", true)
+addEventHandler("onPlayerBuyFood", root, function(item, price)
+    if getPlayerMoney(client) >= price then
+        takePlayerMoney(client, price) -- Забираем у игрока
+        bankBalance = bankBalance + price -- КЛАДЕМ В БАНК
+        
+        setElementHealth(client, getElementHealth(client) + 30)
+        outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
+    else
+        outputChatBox("У вас нет денег!", client, 255, 0, 0)
+    end
+end)
+
+addEventHandler("onMarkerHit", marker1, function(player)
+    if getElementType(player) == "player" then
+        triggerClientEvent(player, "openCafeMenu", player)
+    end
+end)
+
+
+-------------24/7--------------------------------------------------------
+-- Координату Z я опустил на 1.0 (с 19.555 до 18.5), 
+-- чтобы цилиндр стоял ровно на земле, а не висел в воздухе.
+local m2x, m2y, m2z = 1360.396, 207.244, 18.5
+local marker2 = createMarker(m2x, m2y, m2z, "cylinder", 1.5, 0, 255, 255, 150) -- Сделал его бирюзовым для отличия
+
+-- Общая функция для проверки работы
+function onMarkerHit(player)
+    if getElementType(player) == "player" then
+        -- Проверяем, на какой именно маркер наступили
+        if source == marker1 then
+            outputChatBox("Ты на первом маркере (желтом)!", player, 255, 255, 0)
+        elseif source == marker2 then
+            outputChatBox("Система работает! Ты на втором маркере (бирюзовом).", player, 0, 255, 255)
+        end
+    end
+end
+
+--------------------РАБОТА---------------------------------------------
+-- Координаты нового маркера (высоту Z чуть занизил для земли)
+local m3x, m3y, m3z = 1344.622, 282.463, 18.5
+local sacrificeMarker = createMarker(m3x, m3y, m3z, "cylinder", 1.5, 255, 0, 0, 150)
+
+function sacrificeHealthForCash(player)
+    if getElementType(player) == "player" then
+        local currentHP = getElementHealth(player)
+        
+        -- Проверка: если HP больше 5, совершаем сделку
+        if currentHP > 5 then
+            givePlayerMoney(player, 10)
+            setElementHealth(player, currentHP - 5)
+            outputChatBox("Кровь в обмен на деньги! +$10 (-5 HP)", player, 255, 50, 50)
+        else
+            outputChatBox("Ты слишком слаб для такой жертвы...", player, 255, 0, 0)
+        end
+    end
+end
+addEventHandler("onMarkerHit", sacrificeMarker, function(player)
+    if getElementType(player) == "player" then
+        local pHP = getElementHealth(player)
+        local payout = 10
+        
+        -- Проверяем: есть ли деньги в банке?
+        if bankBalance >= payout then
+            if pHP > 5 then
+                bankBalance = bankBalance - payout -- ЗАБИРАЕМ ИЗ БАНКА
+                givePlayerMoney(player, payout) -- Даем игроку
+                setElementHealth(player, pHP - 5)
+                outputChatBox("Вы забрали $10 из банка. Остаток в казне: $" .. bankBalance, player, 255, 50, 50)
+            else
+                outputChatBox("Вы слишком слабы!", player, 255, 0, 0)
+            end
+        else
+            outputChatBox("В банке нет денег! Поешьте в кафе, чтобы пополнить бюджет.", player, 255, 0, 0)
+        end
+    end
+end)
+
+
+-- Привязываем оба маркера к одной функции
+--addEventHandler("onMarkerHit", marker1, onMarkerHit)
+addEventHandler("onMarkerHit", marker2, onMarkerHit)

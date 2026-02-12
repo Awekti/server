@@ -1,0 +1,7 @@
+<meta>
+    <script src="script.lua" type="server" />
+    <script src="spawn.lua" type="server" />
+    <script src="business.lua" type="server" />
+    <script src="client.lua" type="client" />
+	<script src="houses.lua" type="server" />
+</meta>
