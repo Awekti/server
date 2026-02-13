@@ -1,6 +1,6 @@
 -- work_factory.lua (Server-side)
 
-factoryStock = 0 -- Общий склад ресурсов штата
+factoryStock = 50 -- Общий склад ресурсов штата
 
 local cargoPoints = {
     {13.132, 74.044, 2.1},

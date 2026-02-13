@@ -67,3 +67,20 @@ addEventHandler("onClientRender", root, function()
         end
     end
 end)
+
+-- ТЕКСТ НАД КАФЕШКОЙ
+local cx, cy, cz = 1366.39, 248.8, 21.5 -- Подняли Z для видимости
+
+addEventHandler("onClientRender", root, function()
+    local px, py, pz = getElementPosition(localPlayer)
+    if getDistanceBetweenPoints3D(cx, cy, cz, px, py, pz) < 20 then
+        -- Берем данные из resourceRoot
+        local stock = getElementData(resourceRoot, "cafeStock") or 0
+        local sx, sy = getScreenFromWorldPosition(cx, cy, cz)
+        
+        if sx and sy then
+            dxDrawText("ПРОДУКТОВ: " .. stock, sx, sy, sx, sy, tocolor(255, 255, 0, 255), 1.5, "default-bold", "center")
+        end
+    end
+end)
+

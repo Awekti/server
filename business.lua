@@ -1,7 +1,10 @@
-cafeStock = 0
-bankBalance = 1000
-
+cafeStock = 10
 setElementData(resourceRoot, "cafeStock", cafeStock)
+bankBalance = 1000
+detailsStock = 10 -- Склад запчастей в цеху (красный маркер)
+serviceStock = 10    -- Склад запчастей в автосервисе (синий маркер)
+setElementData(resourceRoot, "sparePartsStock", sparePartsStock)
+setElementData(resourceRoot, "serviceStock", serviceStock)
 
 -- Функция: Проверка баланса банка (команда /bank)
 addCommandHandler("bank", function(player)
@@ -95,19 +98,20 @@ addEventHandler("onMarkerHit", sacrificeMarker, function(player)
         local pHP = getElementHealth(player)
         local payout = 10
         
-        -- Проверяем: есть ли деньги в банке?
         if bankBalance >= payout then
             if pHP > 5 then
                 bankBalance = bankBalance - payout -- ЗАБИРАЕМ ИЗ БАНКА
+                detailsStock = detailsStock + 1 -- ПРОИЗВОДИМ ДЕТАЛЬ
+                setElementData(resourceRoot, "detailsStock", detailsStock)
                 givePlayerMoney(player, payout) -- Даем игроку
                 setElementData(resourceRoot, "serverBank", bankBalance)
                 setElementHealth(player, pHP - 5)
-                outputChatBox("Вы забрали $10 из банка. Остаток в казне: $" .. bankBalance, player, 255, 50, 50)
+                outputChatBox("[ЦЕХ] Ты произвел деталь! +$10. Всего на складе: " .. detailsStock, player, 255, 50, 50)
             else
-                outputChatBox("Вы слишком слабы!", player, 255, 0, 0)
+                outputChatBox("[ЦЕХ] Ты слишком слаб для работы!", player, 255, 0, 0)
             end
         else
-            outputChatBox("В банке нет денег! Поешьте в кафе, чтобы пополнить бюджет.", player, 255, 0, 0)
+            outputChatBox("[ЦЕХ] В банке нет денег на оплату!", player, 255, 0, 0)
         end
     end
 end)
