@@ -42,13 +42,23 @@ end)
 -- Функция загрузки
 function onLoadHit(player)
     if getElementType(player) == "player" and getElementData(player, "isDelivery") then
-        -- Проверяем, видит ли игрок этот маркер (значит он на этом этапе)
         if isElementVisibleTo(source, player) then
+            if factoryStock >= 10 then
+                -- Списываем товар со склада
+                factoryStock = factoryStock - 10
+                setElementData(resourceRoot, "factoryStock", factoryStock)
             setElementVisibleTo(loadMarker1, player, false)
             setElementVisibleTo(loadMarker2, player, false)
             setElementVisibleTo(loadMarker3, player, false)
             setElementVisibleTo(finishMarker, player, true)
-            outputChatBox("[ДОСТАВКА] Товар загружен! Вези на точку выгрузки.", player, 0, 255, 0)
+            outputChatBox("[ДОСТАВКА] 10 ед. товара загружены со склада! Вези на выгрузку.", player, 0, 255, 0)
+                outputChatBox("[СКЛАД] Остаток ресурсов на заводе: " .. factoryStock, player, 200, 200, 255)
+            else
+                -- Если товара мало
+                outputChatBox("[ДОСТАВКА] На складе пусто! Подожди, пока рабочие завода сделают товар.", player, 255, 50, 50)
+                outputChatBox("[ИНФО] Нужно минимум 10 ед. (Сейчас на складе: " .. factoryStock .. ")", player, 255, 255, 255)
+            end
+            
         end
     end
 end
@@ -65,6 +75,8 @@ addEventHandler("onMarkerHit", finishMarker, function(player)
             if pHP > 20 then
                 bankBalance = bankBalance - 50
                 givePlayerMoney(player, 50)
+                cafeStock = cafeStock + 10
+                setElementData(resourceRoot, "cafeStock", cafeStock)
                 setElementData(resourceRoot, "serverBank", bankBalance)
                 setElementHealth(player, pHP - 20)
                 
@@ -73,6 +85,9 @@ addEventHandler("onMarkerHit", finishMarker, function(player)
                 setElementVisibleTo(loadMarker1, player, true)
                 setElementVisibleTo(loadMarker2, player, true)
                 setElementVisibleTo(loadMarker3, player, true)
+
+                outputChatBox("[ДОСТАВКА] Ты привез 10 ед. продуктов в Кафе!", player, 0, 255, 0) -- кафе
+                outputChatBox("[КАФЕ] На складе продуктов: " .. cafeStock, player, 200, 255, 200) -- кафе
                 
                 outputChatBox("[ДОСТАВКА] Доставлено! +$50. Возвращайся за новой партией.", player, 0, 255, 0)
             else

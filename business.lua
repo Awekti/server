@@ -1,4 +1,7 @@
+cafeStock = 0
 bankBalance = 1000
+
+setElementData(resourceRoot, "cafeStock", cafeStock)
 
 -- Функция: Проверка баланса банка (команда /bank)
 addCommandHandler("bank", function(player)
@@ -11,21 +14,43 @@ local marker1 = createMarker(m1x, m1y, m1z, "cylinder", 1.5, 255, 255, 0, 150)
 
 addEvent("onPlayerBuyFood", true)
 addEventHandler("onPlayerBuyFood", root, function(item, price)
-    if getPlayerMoney(client) >= price then
-        takePlayerMoney(client, price) -- Забираем у игрока
-        bankBalance = bankBalance + price -- КЛАДЕМ В БАНК
-        setElementData(resourceRoot, "serverBank", bankBalance)
+    if cafeStock >= 1 then
+        if getPlayerMoney(client) >= price then
+            cafeStock = cafeStock - 1
+            setElementData(resourceRoot, "cafeStock", cafeStock)
+    
+            takePlayerMoney(client, price) -- Забираем у игрока
+            bankBalance = bankBalance + price -- КЛАДЕМ В БАНК
+            setElementData(resourceRoot, "serverBank", bankBalance)
         
-        setElementHealth(client, getElementHealth(client) + 30)
-        outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
+            setElementHealth(client, getElementHealth(client) + 30)
+            outputChatBox("Приятного аппетита! В кафе осталось " .. cafeStock .. " порций.", client, 0, 255, 0)
+            outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
+        else
+            outputChatBox("У вас нет денег!", client, 255, 0, 0)
+        end
     else
-        outputChatBox("У вас нет денег!", client, 255, 0, 0)
+        outputChatBox("[КАФЕ] Еда закончилась! Ждем доставку продуктов.", client, 255, 50, 50)
     end
 end)
 
 addEventHandler("onMarkerHit", marker1, function(player)
     if getElementType(player) == "player" then
         triggerClientEvent(player, "openCafeMenu", player)
+    end
+end)
+
+local cx, cy, cz = 1366.39, 248.8, 20.5 
+addEventHandler("onClientRender", root, function()
+    -- (твой старый код отрисовки банка и склада завода)
+    
+    local px, py, pz = getElementPosition(localPlayer)
+    if getDistanceBetweenPoints3D(cx, cy, cz, px, py, pz) < 15 then
+        local stock = getElementData(resourceRoot, "cafeStock") or 0
+        local sx, sy = getScreenFromWorldPosition(cx, cy, cz)
+        if sx and sy then
+            dxDrawText("ПРОДУКТОВ В КАФЕ: " .. stock, sx, sy, sx, sy, tocolor(255, 255, 0, 255), 1.2, "default-bold", "center")
+        end
     end
 end)
 
