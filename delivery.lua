@@ -1,18 +1,20 @@
 -- Таблица спавна (Rumpo ID 440)
 local spawnPoints = {
-    {1220.5, 133.5, 20.7, 338},
-    {1210.6, 138.5, 20.7, 338},
-    {1215.4, 135.8, 20.7, 338}
+    {179.7, -6.7, 1.6, 338},
+    {172.7, -6.8, 1.6, 338},
+    {179.7, -6.7, 1.6, 338}
 }
 
 -- 1. Пикап начала работы
-local jobStartPickup = createPickup(1228.328, 181.759, 20.362, 3, 1275)
+local jobStartPickup = createPickup(166.888, -33.835, 1.578, 3, 1275)
 
 -- 2. Маркеры загрузки (ставим альфу 150, но выключаем видимость для всех через false)
-local loadMarker1 = createMarker(1237.799, 178.082, 19.3, "cylinder", 3, 255, 255, 0, 150)
-local loadMarker2 = createMarker(1219.054, 186.866, 19.2, "cylinder", 3, 255, 255, 0, 150)
+local loadMarker1 = createMarker(165.0, -44.0, 1.578, "cylinder", 3, 255, 255, 0, 150)
+local loadMarker2 = createMarker(165.0, -54.0, 1.578, "cylinder", 3, 255, 255, 0, 150)
+local loadMarker3 = createMarker(165.0, -15.0, 1.578, "cylinder", 3, 255, 255, 0, 150)
 setElementVisibleTo(loadMarker1, root, false)
 setElementVisibleTo(loadMarker2, root, false)
+setElementVisibleTo(loadMarker3, root, false)
 
 -- 3. Маркер разгрузки
 local finishMarker = createMarker(1362.675, 260.587, 18.5, "cylinder", 3, 0, 255, 0, 150)
@@ -31,6 +33,7 @@ addEventHandler("onPickupHit", jobStartPickup, function(player)
         -- Включаем видимость маркеров ТОЛЬКО для этого игрока
         setElementVisibleTo(loadMarker1, player, true)
         setElementVisibleTo(loadMarker2, player, true)
+        setElementVisibleTo(loadMarker3, player, true)
         
         outputChatBox("[ДОСТАВКА] Машина подана! Езжай на погрузку (желтые маркеры).", player, 255, 255, 0)
     end
@@ -43,6 +46,7 @@ function onLoadHit(player)
         if isElementVisibleTo(source, player) then
             setElementVisibleTo(loadMarker1, player, false)
             setElementVisibleTo(loadMarker2, player, false)
+            setElementVisibleTo(loadMarker3, player, false)
             setElementVisibleTo(finishMarker, player, true)
             outputChatBox("[ДОСТАВКА] Товар загружен! Вези на точку выгрузки.", player, 0, 255, 0)
         end
@@ -50,6 +54,7 @@ function onLoadHit(player)
 end
 addEventHandler("onMarkerHit", loadMarker1, onLoadHit)
 addEventHandler("onMarkerHit", loadMarker2, onLoadHit)
+addEventHandler("onMarkerHit", loadMarker3, onLoadHit)
 
 -- Функция разгрузки
 addEventHandler("onMarkerHit", finishMarker, function(player)
@@ -67,6 +72,7 @@ addEventHandler("onMarkerHit", finishMarker, function(player)
                 setElementVisibleTo(finishMarker, player, false)
                 setElementVisibleTo(loadMarker1, player, true)
                 setElementVisibleTo(loadMarker2, player, true)
+                setElementVisibleTo(loadMarker3, player, true)
                 
                 outputChatBox("[ДОСТАВКА] Доставлено! +$50. Возвращайся за новой партией.", player, 0, 255, 0)
             else
@@ -88,6 +94,7 @@ addEventHandler("onVehicleExit", root, function(player, seat)
         setElementData(player, "isDelivery", false)
         setElementVisibleTo(loadMarker1, player, false)
         setElementVisibleTo(loadMarker2, player, false)
+        setElementVisibleTo(loadMarker3, player, false)
         setElementVisibleTo(finishMarker, player, false)
         
         outputChatBox("[ДОСТАВКА] Ты покинул транспорт. Машина будет удалена через 10 секунд!", player, 255, 100, 0)
@@ -110,6 +117,7 @@ addEventHandler("onVehicleExplode", root, function()
             setElementData(driver, "isDelivery", false)
             setElementVisibleTo(loadMarker1, driver, false)
             setElementVisibleTo(loadMarker2, driver, false)
+            setElementVisibleTo(loadMarker3, driver, false)
             setElementVisibleTo(finishMarker, driver, false)
             outputChatBox("[ДОСТАВКА] Машина уничтожена! Работа провалена.", driver, 255, 0, 0)
         end

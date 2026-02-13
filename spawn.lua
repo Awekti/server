@@ -42,8 +42,9 @@ function handlePlayerDeath()
             -- ПРЯЧЕМ МАРКЕРЫ ДОСТАВЩИКА (если они есть)
             if loadMarker1 then setElementVisibleTo(loadMarker1, player, false) end
             if loadMarker2 then setElementVisibleTo(loadMarker2, player, false) end
+            if loadMarker3 then setElementVisibleTo(loadMarker3, player, false) end
             if finishMarker then setElementVisibleTo(finishMarker, player, false) end
-            
+
             setPlayerMoney(player, 0) -- ПРИНУДИТЕЛЬНО В 0
             takeAllWeapons(player)
             
