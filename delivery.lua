@@ -138,6 +138,7 @@ addEventHandler("onMarkerHit", finishService, onFinishDelivery)
 
 -- ФУНКЦИЯ: ВЫХОД ИЗ ТРАНСПОРТА / ОЧИСТКА
 function cleanUpJob(player)
+    if not isElement(player) then return end
     setElementData(player, "isDelivery", false)
     setElementData(player, "jobType", false)
     setElementVisibleTo(loadFarm1, player, false)
@@ -149,7 +150,8 @@ function cleanUpJob(player)
 end
 
 addEventHandler("onVehicleExit", root, function(player)
-    if getElementData(player, "isDelivery") and getElementModel(source) == 440 then
+     if getElementData(source, "isPersonal") then return end
+     if getElementData(player, "isDelivery") and getElementModel(source) == 440 then
         local veh = source
         cleanUpJob(player)
         outputChatBox("[ДОСТАВКА] Машина будет удалена через 10 секунд!", player, 255, 100, 0)
@@ -159,6 +161,7 @@ end)
 
 addEventHandler("onVehicleExplode", root, function()
     local driver = getVehicleController(source)
+    --if getElementData(source, "isPersonal") then return end -- ПРОВЕРКА: Если взорвалась личная машина, НЕ удаляем её этим скриптом
     if driver and getElementData(driver, "isDelivery") then
         cleanUpJob(driver)
         outputChatBox("[ДОСТАВКА] Машина взорвана!", driver, 255, 0, 0)

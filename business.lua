@@ -1,10 +1,12 @@
 cafeStock = 10
-setElementData(resourceRoot, "cafeStock", cafeStock)
 bankBalance = 1000
-detailsStock = 10 -- Склад запчастей в цеху (красный маркер)
-serviceStock = 10    -- Склад запчастей в автосервисе (синий маркер)
+detailsStock = 10
+serviceStock = 10
+
+setElementData(resourceRoot, "cafeStock", cafeStock)
 setElementData(resourceRoot, "sparePartsStock", sparePartsStock)
 setElementData(resourceRoot, "serviceStock", serviceStock)
+setElementData(resourceRoot, "detailsStock", detailsStock or 0)
 
 -- Функция: Проверка баланса банка (команда /bank)
 addCommandHandler("bank", function(player)
