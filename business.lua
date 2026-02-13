@@ -14,6 +14,7 @@ addEventHandler("onPlayerBuyFood", root, function(item, price)
     if getPlayerMoney(client) >= price then
         takePlayerMoney(client, price) -- Забираем у игрока
         bankBalance = bankBalance + price -- КЛАДЕМ В БАНК
+        setElementData(resourceRoot, "serverBank", bankBalance)
         
         setElementHealth(client, getElementHealth(client) + 30)
         outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
@@ -30,8 +31,6 @@ end)
 
 
 -------------24/7--------------------------------------------------------
--- Координату Z я опустил на 1.0 (с 19.555 до 18.5), 
--- чтобы цилиндр стоял ровно на земле, а не висел в воздухе.
 local m2x, m2y, m2z = 1360.396, 207.244, 18.5
 local marker2 = createMarker(m2x, m2y, m2z, "cylinder", 1.5, 0, 255, 255, 150) -- Сделал его бирюзовым для отличия
 
@@ -48,7 +47,7 @@ function onMarkerHit(player)
 end
 
 --------------------РАБОТА---------------------------------------------
--- Координаты нового маркера (высоту Z чуть занизил для земли)
+-- КРАСНЫЙ-------------------------------------------------------------
 local m3x, m3y, m3z = 1344.622, 282.463, 18.5
 local sacrificeMarker = createMarker(m3x, m3y, m3z, "cylinder", 1.5, 255, 0, 0, 150)
 
@@ -76,6 +75,7 @@ addEventHandler("onMarkerHit", sacrificeMarker, function(player)
             if pHP > 5 then
                 bankBalance = bankBalance - payout -- ЗАБИРАЕМ ИЗ БАНКА
                 givePlayerMoney(player, payout) -- Даем игроку
+                setElementData(resourceRoot, "serverBank", bankBalance)
                 setElementHealth(player, pHP - 5)
                 outputChatBox("Вы забрали $10 из банка. Остаток в казне: $" .. bankBalance, player, 255, 50, 50)
             else
@@ -86,6 +86,36 @@ addEventHandler("onMarkerHit", sacrificeMarker, function(player)
         end
     end
 end)
+
+-- Координаты для текста над красным маркером
+local tx, ty, tz = 1344.622, 282.463, 20.5 
+
+function updateBankLabels()
+    -- Создаем или обновляем 3D текст (используем ElementData, чтобы клиент его рисовал)
+    -- Но так как мы пока без сложного GUI, давай просто выводить инфу в зону стрима
+    for _, player in ipairs(getElementsByType("player")) do
+        -- Дистанция до маркера
+        local px, py, pz = getElementPosition(player)
+        if getDistanceBetweenPoints3D(tx, ty, tz, px, py, pz) < 20 then
+            -- Если игрок рядом, можно слать ему сообщение или юзать dxDraw (но это клиент)
+        end
+    end
+end
+
+-- Давай лучше сделаем простую команду /state для всех
+addCommandHandler("state", function(player)
+    outputChatBox("--- ОТЧЕТ КАЗНЫ ШТАТА ---", player, 0, 255, 0)
+    outputChatBox("Доступно в банке: $" .. bankBalance, player, 255, 255, 255)
+    
+    local houseCount = 0
+    for _, h in ipairs(getElementsByType("pickup")) do
+        if getElementData(h, "owner") then houseCount = houseCount + 1 end
+    end
+    
+    outputChatBox("Куплено домов: " .. houseCount, player, 255, 255, 255)
+    outputChatBox("--------------------------", player, 0, 255, 0)
+end)
+
 
 
 -- Привязываем оба маркера к одной функции

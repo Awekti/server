@@ -25,12 +25,25 @@ function handlePlayerDeath()
     -- 1. Возвращаем деньги в банк штата
     if moneyAtDeath > 0 then
         bankBalance = bankBalance + moneyAtDeath
+        setElementData(resourceRoot, "serverBank", bankBalance)
         outputChatBox("[ЭКОНОМИКА] $" .. moneyAtDeath .. " умершего игрока возвращены в банк штата!", root, 255, 200, 0)
     end
     
     -- 2. Обнуление данных через 100мс (чтобы перебить стандартные скрипты)
     setTimer(function()
         if isElement(player) then
+            setElementData(player, "isFactoryWorker", false)
+            setElementData(player, "isDelivery", false)
+
+            if cargoMarker1 then setElementVisibleTo(cargoMarker1, player, false) end
+            if cargoMarker2 then setElementVisibleTo(cargoMarker2, player, false) end
+            if dropMarker then setElementVisibleTo(dropMarker, player, false) end
+
+            -- ПРЯЧЕМ МАРКЕРЫ ДОСТАВЩИКА (если они есть)
+            if loadMarker1 then setElementVisibleTo(loadMarker1, player, false) end
+            if loadMarker2 then setElementVisibleTo(loadMarker2, player, false) end
+            if finishMarker then setElementVisibleTo(finishMarker, player, false) end
+            
             setPlayerMoney(player, 0) -- ПРИНУДИТЕЛЬНО В 0
             takeAllWeapons(player)
             

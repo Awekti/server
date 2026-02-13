@@ -19,6 +19,7 @@ function onCarMarkerHit(element)
                 
                 -- ПОПОЛНЯЕМ БАНК ШТАТА (живая экономика!)
                 bankBalance = bankBalance + repairCost
+                setElementData(resourceRoot, "serverBank", bankBalance)
                 
                 -- Чиним машину
                 fixVehicle(element)

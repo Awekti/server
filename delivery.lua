@@ -24,6 +24,7 @@ addEventHandler("onPickupHit", jobStartPickup, function(player)
         local pos = spawnPoints[math.random(#spawnPoints)]
         local vehicle = createVehicle(440, pos[1], pos[2], pos[3], 0, 0, pos[4])
         
+        setElementData(vehicle, "creator", player)
         warpPedIntoVehicle(player, vehicle)
         setElementData(player, "isDelivery", true)
         
@@ -59,6 +60,7 @@ addEventHandler("onMarkerHit", finishMarker, function(player)
             if pHP > 20 then
                 bankBalance = bankBalance - 50
                 givePlayerMoney(player, 50)
+                setElementData(resourceRoot, "serverBank", bankBalance)
                 setElementHealth(player, pHP - 20)
                 
                 -- Снова на круг: выключаем финиш, включаем старт
@@ -73,5 +75,45 @@ addEventHandler("onMarkerHit", finishMarker, function(player)
         else
             outputChatBox("[ДОСТАВКА] В банке нет денег!", player, 255, 0, 0)
         end
+    end
+end)
+
+-- Функция: Игрок вышел из машины
+addEventHandler("onVehicleExit", root, function(player, seat)
+    -- Проверяем, что у игрока активна работа и это нужная модель (Rumpo 440)
+    if getElementData(player, "isDelivery") and getElementModel(source) == 440 then
+        local theVehicle = source -- Сохраняем ссылку на машину
+        
+        -- Сбрасываем данные игрока и прячем маркеры СРАЗУ
+        setElementData(player, "isDelivery", false)
+        setElementVisibleTo(loadMarker1, player, false)
+        setElementVisibleTo(loadMarker2, player, false)
+        setElementVisibleTo(finishMarker, player, false)
+        
+        outputChatBox("[ДОСТАВКА] Ты покинул транспорт. Машина будет удалена через 10 секунд!", player, 255, 100, 0)
+
+        -- Удаляем машину через 10 секунд, передавая 'theVehicle' в функцию
+        setTimer(function(veh)
+            if isElement(veh) then 
+                destroyElement(veh) 
+            end
+        end, 10000, 1, theVehicle)
+    end
+end)
+
+-- Функция: Машина взорвалась
+addEventHandler("onVehicleExplode", root, function()
+    if getElementModel(source) == 440 then
+        -- Ищем, кто был водителем
+        local driver = getVehicleController(source)
+        if driver and getElementData(driver, "isDelivery") then
+            setElementData(driver, "isDelivery", false)
+            setElementVisibleTo(loadMarker1, driver, false)
+            setElementVisibleTo(loadMarker2, driver, false)
+            setElementVisibleTo(finishMarker, driver, false)
+            outputChatBox("[ДОСТАВКА] Машина уничтожена! Работа провалена.", driver, 255, 0, 0)
+        end
+        -- Удаляем остатки машины через 5 секунд
+        setTimer(destroyElement, 5000, 1, source)
     end
 end)

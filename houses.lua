@@ -28,10 +28,11 @@ for i, pos in ipairs(housesData) do
                 takePlayerMoney(player, buyPrice)
                 bankBalance = bankBalance + buyPrice 
                 setElementData(source, "owner", player) -- Записываем игрока как владельца
+                setElementData(resourceRoot, "serverBank", bankBalance)
                 outputChatBox("Поздравляем! Вы купили '" .. hName .. "' за $" .. buyPrice, player, 0, 255, 0)
                 outputChatBox("Деньги за покупку ушли в бюджет штата. Баланс банка: $" .. bankBalance, player, 255, 200, 0)
                 -- Меняем модель на синий домик (купленный), если хочешь:
-                setElementModel(source, 1272) 
+                --setElementModel(source, 1272) 
             else
                 outputChatBox("Этот дом стоит $" .. buyPrice .. ". У вас не хватает денег!", player, 255, 0, 0)
             end
@@ -57,6 +58,7 @@ setTimer(function()
             -- 1. Снимаем налог
             if getPlayerMoney(owner) >= taxRate then
                 takePlayerMoney(owner, taxRate)
+                setElementData(resourceRoot, "serverBank", bankBalance)
                 outputChatBox("[Дом] Списан налог: $" .. taxRate, owner, 255, 200, 0)
             else
                 -- Если денег на налог нет, можно отобрать дом:

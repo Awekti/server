@@ -28,3 +28,42 @@ addEvent("openCafeMenu", true)
 addEventHandler("openCafeMenu", root, function()
     toggleCafeMenu(true)
 end)
+
+-- Координаты красного маркера (подними Z повыше, чтобы текст был над головой)
+local tx, ty, tz = 1344.622, 282.463, 20.8 
+
+addEventHandler("onClientRender", root, function()
+    local px, py, pz = getElementPosition(localPlayer)
+    local distance = getDistanceBetweenPoints3D(tx, ty, tz, px, py, pz)
+
+    -- Рисуем текст только если игрок ближе 20 метров
+    if distance < 20 then
+        -- Получаем текущий баланс из данных сервера
+        local currentBank = getElementData(resourceRoot, "serverBank") or 0
+        
+        -- Конвертируем 3D координаты в 2D на экране
+        local sx, sy = getScreenFromWorldPosition(tx, ty, tz)
+        
+        if sx and sy then
+            local text = "БАНК ШТАТА: $" .. currentBank .. "\nПожертвуй здоровьем за $10"
+            -- Рисуем тень (черный текст)
+            dxDrawText(text, sx + 2, sy + 2, sx, sy, tocolor(0, 0, 0, 255), 1.5, "default-bold", "center")
+            -- Рисуем основной текст (красно-белый)
+            dxDrawText(text, sx, sy, sx, sy, tocolor(255, 50, 50, 255), 1.5, "default-bold", "center")
+        end
+    end
+end)
+
+-- Текст над складом завода
+local fx, fy, fz = -1.442, 74.723, 4.0 
+
+addEventHandler("onClientRender", root, function()
+    local px, py, pz = getElementPosition(localPlayer)
+    if getDistanceBetweenPoints3D(fx, fy, fz, px, py, pz) < 15 then
+        local stock = getElementData(resourceRoot, "factoryStock") or 0
+        local sx, sy = getScreenFromWorldPosition(fx, fy, fz)
+        if sx and sy then
+            dxDrawText("СКЛАД ЗАВОДА\nРесурсов: " .. stock, sx, sy, sx, sy, tocolor(100, 200, 255, 255), 1.2, "default-bold", "center")
+        end
+    end
+end)

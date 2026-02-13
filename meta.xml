@@ -6,4 +6,6 @@
 	<script src="houses.lua" type="server" />
 	<script src="carchek.lua" type="server" />
 	<script src="delivery.lua" type="server" />
+	<script src="hunger.lua" type="server" />
+	<script src="farm.lua" type="server" />
 </meta>
