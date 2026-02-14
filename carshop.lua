@@ -21,18 +21,20 @@ addEventHandler("onPlayerBuyCar", root, function(model, price, partsNeeded)
             takePlayerMoney(client, price)
             bankBalance = (bankBalance or 0) + price -- Деньги в банк
             detailsStock = detailsStock - partsNeeded -- Тратим детали со склада
-            
+
             -- Обновляем данные для 3D текстов
             setElementData(resourceRoot, "serverBank", bankBalance)
             setElementData(resourceRoot, "detailsStock", detailsStock)
             
             -- СПАВН:
             local spawn = spawnPoints[math.random(#spawnPoints)]
-            local veh = createVehicle(model, spawn[1], spawn[2], spawn[3], 0, 0, spawn[4])
-            warpPedIntoVehicle(client, veh)
+            local veh = createVehicle(model, spawn[1], spawn[2], spawn[3], 0, 0, spawn[4] or 0)
+warpPedIntoVehicle(client, veh)
+
             
             -- Помечаем авто как личное (чтобы не удалялось скриптом доставки)
             setElementData(veh, "isPersonal", true)
+            setElementData(veh, "owner", client)
             
             outputChatBox("[АВТОСАЛОН] Поздравляем с покупкой! Машина собрана из запчастей склада.", client, 0, 255, 0)
         else

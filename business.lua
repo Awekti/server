@@ -1,7 +1,7 @@
-cafeStock = 10
+cafeStock = 50
 bankBalance = 1000
-detailsStock = 10
-serviceStock = 10
+detailsStock = 50
+serviceStock = 50
 
 setElementData(resourceRoot, "cafeStock", cafeStock)
 setElementData(resourceRoot, "sparePartsStock", sparePartsStock)

@@ -1,13 +1,17 @@
 <meta>
-    <script src="script.lua" type="server" />
-    <script src="spawn.lua" type="server" />
-    <script src="business.lua" type="server" />
-    <script src="client.lua" type="client" />
-	<script src="houses.lua" type="server" />
-	<script src="carchek.lua" type="server" />
+	<script src="data_manager.lua" type="server" />
+	
+	<script src="factions.lua" type="server" />
+	<script src="spawn.lua" type="server" />
+	<script src="hunger.lua" type="server" />
+    	
+    	<script src="business.lua" type="server" />
 	<script src="farm.lua" type="server" />
 	<script src="delivery.lua" type="server" />
-	<script src="hunger.lua" type="server" />
+	<script src="carchek.lua" type="server" />
+	<script src="houses.lua" type="server" />
 	<script src="carshop.lua" type="server" />
-	
+
+	<script src="client.lua" type="client" />
+	<script src="script.lua" type="server" />	
 </meta>

@@ -30,6 +30,8 @@ function onCarMarkerHit(element)
                     
                     -- ЧИНКА
                     fixVehicle(element)
+                    local rep = getElementData(driver, "repairedCars") or 0
+                     setElementData(driver, "repairedCars", rep + 1)
                     
                     outputChatBox("[АВТОСЕРВИС] Машина починена! Осталось запчастей: " .. serviceStock, driver, 0, 255, 0)
                 else
