@@ -86,6 +86,7 @@ function handlePlayerDeath(ammo, killer, weapon, bodypart)
         if isElement(player) then
             setElementData(player, "isFactoryWorker", false)
             setElementData(player, "isDelivery", false)
+            setElementData(player, "disease", false)
 
             if loadFarm1 then setElementVisibleTo(loadFarm1, player, false) end
             if loadFarm2 then setElementVisibleTo(loadFarm2, player, false) end

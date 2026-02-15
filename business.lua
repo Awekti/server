@@ -29,6 +29,13 @@ addEventHandler("onPlayerBuyFood", root, function(item, price)
             setElementData(resourceRoot, "serverBank", bankBalance)
         
             setElementHealth(client, getElementHealth(client) + 30)
+            if math.random(1, 100) <= 5 then -- шанс отравиться
+    -- ПРОВЕРКА: Если игрок уже болен (любой болезнью), новое отравление не даем
+    if not getElementData(client, "disease") then
+        setElementData(client, "disease", "Poison")
+        outputChatBox("🤢 Кажется, бургер был несвежим... Вы отравились!", client, 255, 0, 0)
+    end
+end
             outputChatBox("Приятного аппетита! В кафе осталось " .. cafeStock .. " порций.", client, 0, 255, 0)
             outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
         else

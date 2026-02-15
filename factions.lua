@@ -39,7 +39,7 @@ function setJob(player, jobName)
         setElementData(player, "rank", 1)
     checkGovPromotion(player)
     elseif jobName == "Medic" then
-        outputChatBox("Команда: /heal [Ник]", player, 255, 200, 0)
+        outputChatBox("Команда:\n/heal [Ник]\n/cure1 - простуда\n/cure2 - отравление\n/cure3 - анемия", player, 255, 200, 0)
     elseif jobName == "Police" then
         outputChatBox("Твоя задача: искать улики на местах смертей.", player, 255, 200, 0)
     end
@@ -62,30 +62,111 @@ addCommandHandler("gov", function(player)
 end)
 
 --===========MEDIC============================
+-- factions.lua (Server-side)
+
+-- 1. ОБЩАЯ ФУНКЦИЯ ПРОВЕРКИ (вынесена отдельно, чтобы все её видели)
+function checkMedicAction(medic, targetName)
+    if getElementData(medic, "faction") ~= "Medic" then return false end
+    if not targetName then 
+        outputChatBox("Используйте: /команда [Ник]", medic, 255, 255, 0)
+        return false 
+    end
+    
+    local target = getPlayerFromName(targetName)
+    if not target then 
+        outputChatBox("Игрок не найден!", medic, 255, 0, 0)
+        return false 
+    end
+    
+    local mx, my, mz = getElementPosition(medic)
+    local tx, ty, tz = getElementPosition(target)
+    local dist = getDistanceBetweenPoints3D(mx, my, mz, tx, ty, tz)
+    
+    if dist > 3 then 
+        outputChatBox("Игрок слишком далеко!", medic, 255, 0, 0)
+        return false 
+    end
+    
+    return target
+end
+
+-- 2. ОБЫЧНОЕ ЛЕЧЕНИЕ (ХП)
 addCommandHandler("heal", function(player, cmd, targetName)
-    if getElementData(player, "faction") == "Medic" then
-        if not targetName then
-            outputChatBox("Используйте: /heal [Ник игрока]", player, 255, 255, 0)
-            return
-        end
-        local target = getPlayerFromName(targetName)
-        if target then
-            local px, py, pz = getElementPosition(player)
-            local tx, ty, tz = getElementPosition(target)
-             if getDistanceBetweenPoints3D(px, py, pz, tx, ty, tz) < 3 then
-                setElementHealth(target, 100)
-                outputChatBox("Вы вылечили игрока " .. getPlayerName(target), player, 0, 255, 0)
-                outputChatBox("Медик " .. getPlayerName(player) .. " вылечил вас!", target, 0, 255, 0)
-            else
-                outputChatBox("Игрок слишком далеко от вас!", player, 255, 0, 0)
-            end
-        else
-            outputChatBox("Игрок с таким ником не найден!", player, 255, 0, 0)
-        end
-    else
-        outputChatBox("Вы не медик!", player, 255, 0, 0)
+    local target = checkMedicAction(player, targetName)
+    if target then
+        setElementHealth(target, 100)
+        outputChatBox("Вы вылечили игрока " .. getPlayerName(target), player, 0, 255, 0)
+        outputChatBox("Медик " .. getPlayerName(player) .. " вылечил вас!", target, 0, 255, 0)
     end
 end)
+
+-- 3. Лечение ПРОСТУДЫ
+addCommandHandler("cure1", function(player, cmd, targetName)
+    local target = checkMedicAction(player, targetName)
+    if target and getElementData(target, "disease") == "Flu" then
+    setElementData(target, "disease", false)
+    
+    -- Анимация осмотра для медика
+    setPedAnimation(player, "MEDIC", "CPR", 3000, false, false, false, false)
+    -- Анимация облегчения для пациента через 3 секунды
+    setTimer(function()
+        if isElement(target) then 
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+        end
+    end, 3000, 1)
+
+    outputChatBox("Вы дали сироп от кашля. Простуда прошла!", player, 0, 255, 0)
+            outputChatBox("Медик вылечил вашу простуду!", target, 0, 255, 0)
+        else
+            outputChatBox("У игрока нет простуды!", player, 255, 0, 0)
+        end
+    end)
+
+-- 4. Лечение ОТРАВЛЕНИЯ
+addCommandHandler("cure2", function(player, cmd, targetName)
+    local target = checkMedicAction(player, targetName)
+    if target and getElementData(target, "disease") == "Poison" then
+    setElementData(target, "disease", false)
+    
+    -- Анимация осмотра для медика
+    setPedAnimation(player, "MEDIC", "CPR", 3000, false, false, false, false)
+    -- Анимация облегчения для пациента через 3 секунды
+    setTimer(function()
+        if isElement(target) then 
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+        end
+    end, 3000, 1)
+
+    outputChatBox("Вы сделали промывание желудка. Отравление снято!", player, 0, 255, 0)
+            outputChatBox("Медик спас вас от отравления!", target, 0, 255, 0)
+        else
+            outputChatBox("У игрока нет отравления!", player, 255, 0, 0)
+        end
+    end)
+
+-- 5. Лечение АНЕМИИ
+addCommandHandler("cure3", function(player, cmd, targetName)
+    local target = checkMedicAction(player, targetName)
+    if target and getElementData(target, "disease") == "Anemia" then
+    setElementData(target, "disease", false)
+    
+    -- Анимация осмотра для медика
+    setPedAnimation(player, "MEDIC", "CPR", 3000, false, false, false, false)
+    -- Анимация облегчения для пациента через 3 секунды
+    setTimer(function()
+        if isElement(target) then 
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+        end
+    end, 3000, 1)
+
+    outputChatBox("Вы вкололи витамины. Анемия побеждена!", player, 0, 255, 0)
+            setElementHealth(target, 100) -- Возвращаем ХП, так как оно было залочено на 50
+            outputChatBox("Медик вернул вам силы (Анемия прошла)!", target, 0, 255, 0)
+        else
+            outputChatBox("У игрока нет анемии!", player, 255, 0, 0)
+        end
+    end)
+
 --=============================================
 --===========GOV===============================
 
