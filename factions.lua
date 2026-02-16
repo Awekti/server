@@ -283,22 +283,17 @@ function updatePoliceXP(player)
     local xp = (getElementData(player, "police_xp") or 0) + 1
     local rank = getElementData(player, "rank") or 1
     setElementData(player, "police_xp", xp)
-    outputServerLog("POLICE XP: " .. getPlayerName(player) .. " получил опыт. Всего: " .. xp)
     
     -- Проверка повышения до 2 ранга (10 улик)
     if rank == 1 and xp >= 10 then
         setElementData(player, "rank", 2)
         setElementModel(player, policeRanks[2].skin)
-        outputChatBox("[ПОЛИЦИЯ] Повышение! Ранг 2: Офицер. Получена премия $200.", player, 0, 255, 0)
-        givePlayerMoney(player, 200)
     end
     
     -- Проверка повышения до 3 ранга (25 улик)
     if rank == 2 and xp >= 25 then
         setElementData(player, "rank", 3)
         setElementModel(player, policeRanks[3].skin)
-        outputChatBox("[ПОЛИЦИЯ] Повышение! Ранг 3: Детектив. Получена премия $500.", player, 0, 255, 0)
-        givePlayerMoney(player, 500)
     end
 end
 

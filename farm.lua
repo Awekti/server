@@ -33,7 +33,7 @@ function onFarmPickup(player)
     
     -- Проверяем наличие функции setJob (из factions.lua)
     if type(setJob) ~= "function" then
-        outputChatBox("❌ ОШИБКА: Функция setJob не найдена! Проверь meta.xml", player, 255, 0, 0)
+        outputChatBox("ОШИБКА: Функция setJob не найдена! Проверь meta.xml", player, 255, 0, 0)
         return
     end
 
@@ -61,19 +61,19 @@ function onFarmPickup(player)
             local r = math.random(1, 2)
             local targetMarker = (r == 1 and m_f1_c1 or m_f1_c2)
             setElementVisibleTo(targetMarker, player, true)
-            outputChatBox("👨‍🌾 [ФЕРМА №1] Смена начата! Иди к желтому маркеру.", player, 255, 255, 0)
+            outputChatBox("[ФЕРМА №1] Смена начата! Иди к желтому маркеру.", player, 255, 255, 0)
         else
             if rank >= 2 then
                 setElementVisibleTo(m_f2_c, player, true)
-                outputChatBox("👨‍🌾 [ФЕРМА №2] Смена начата!", player, 255, 255, 0)
+                outputChatBox("[ФЕРМА №2] Смена начата!", player, 255, 255, 0)
             else
-                outputChatBox("⚠️ Доступ ко второму полю только со 2-го ранга!", player, 255, 0, 0)
+                outputChatBox("Доступ ко второму полю только со 2-го ранга!", player, 255, 0, 0)
                 setElementData(player, "isWorking", false)
                 return
             end
         end
     else
-        outputChatBox("🏠 [ФЕРМА] Смена закончена.", player, 255, 100, 0)
+        outputChatBox("[ФЕРМА] Смена закончена.", player, 255, 100, 0)
     end
 end
 addEventHandler("onPickupHit", pick1, onFarmPickup)
@@ -87,18 +87,16 @@ addEventHandler("onMarkerHit", root, function(player)
     if source == m_f1_c1 or source == m_f1_c2 then
         setElementVisibleTo(source, player, false)
         setElementVisibleTo(m_f1_drop, player, true)
-        outputChatBox("📦 Ресурс взят! Неси на склад.", player, 0, 255, 0)
+        outputChatBox("Ресурс взят! Неси на склад.", player, 0, 255, 0)
     elseif source == m_f2_c then
         setElementVisibleTo(m_f2_c, player, false)
         setElementVisibleTo(m_f2_drop, player, true)
-        outputChatBox("📦 Ресурс взят! Неси на склад.", player, 0, 255, 0)
+        outputChatBox("Ресурс взят! Неси на склад.", player, 0, 255, 0)
     elseif source == m_f1_drop or source == m_f2_drop then
         -- ТУТ ТВОЙ КОД СДАЧИ (из предыдущего сообщения)
         -- ... (награда, опыт, новый круг) ...
     end
 end)
-
--- farm.lua (Server-side)
 
 -- УНИВЕРСАЛЬНАЯ ФУНКЦИЯ СДАЧИ (Работает для обоих полей)
 function onFarmDrop(player)
@@ -126,21 +124,21 @@ function onFarmDrop(player)
         setElementData(player, "farm_xp", xp)
         
         -- Повышение до 2 ранга (если накопил 50 опыта)
-        if rank == 1 and xp >= 50 then
+        if rank == 1 and xp >= 5 then
             setElementData(player, "rank", 2)
             -- Вызываем функцию из factions.lua для смены скина
             if type(checkGovPromotion) == "function" then checkGovPromotion(player) end 
-            outputChatBox("✨ ПОВЫШЕНИЕ! Теперь ты Опытный фермер (Ранг 2).", player, 0, 255, 0)
+            outputChatBox("ПОВЫШЕНИЕ! Теперь ты Опытный фермер (Ранг 2).", player, 0, 255, 0)
         end
         
         -- Дебафф здоровья и Бонус 2 ранга
         setElementHealth(player, hp - 1)
         if rank >= 2 and math.random(1, 5) == 1 then
             setElementHealth(player, math.min(100, getElementHealth(player) + 5))
-            outputChatBox("🍎 Перекус на свежем воздухе придал сил! (+5 HP)", player, 0, 255, 0)
+            outputChatBox("Перекус на свежем воздухе придал сил! (+5 HP)", player, 0, 255, 0)
         end
 
-        outputChatBox("✅ Груз сдан! +$" .. reward .. " (Опыт: " .. xp .. ")", player, 0, 255, 0)
+        outputChatBox("Груз сдан! +$" .. reward .. " (Опыт: " .. xp .. ")", player, 0, 255, 0)
 
         -- НОВЫЙ КРУГ (Прячем текущий склад, показываем точку сбора)
         setElementVisibleTo(source, player, false) -- Прячем склад, в который только что зашли
@@ -153,7 +151,7 @@ function onFarmDrop(player)
             setElementVisibleTo(r == 1 and m_f1_c1 or m_f1_c2, player, true)
         end
     else
-        outputChatBox("❌ [ФЕРМА] В банке штата нет денег на оплату!", player, 255, 0, 0)
+        outputChatBox("[ФЕРМА] В банке штата нет денег на оплату!", player, 255, 0, 0)
     end
 end
 

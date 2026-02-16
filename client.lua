@@ -28,6 +28,7 @@ addEventHandler("openCafeMenu", root, function() toggleCafeMenu(true) end)
 -- ИНТЕРФЕЙС АВТОСАЛОНА (GUI)
 -- =============================================================================
 local shopPickupPos = {1228.406, 182.950, 20.219}
+local shopPickupBlip = createBlip(1228.406, 182.950, 20.219, 55, 2, 255, 255, 255, 255, 0, 300)
 local carShopWindow = guiCreateWindow((screenW - 300) / 2, (screenH - 250) / 2, 300, 250, "Автосалон Tampa", false)
 guiSetVisible(carShopWindow, false)
 local btnBuyTampa = guiCreateButton(20, 40, 260, 40, "Купить Tampa ($300 + 50 деталей)", false, carShopWindow)
@@ -55,6 +56,7 @@ end)
 -- БОЛЬНИЦА
 -- =============================================================================
 local hx, hy, hz = 1242.254, 328.090, 20.5
+local hospitalBlip = createBlip(hx, hy, hz, 22, 2, 255, 255, 255, 255, 0, 300)
 
 addEventHandler("onClientRender", root, function()
     local px, py, pz = getElementPosition(localPlayer)
@@ -139,7 +141,7 @@ addEventHandler("onClientRender", root, function()
     if faction == "Farmer" and getElementData(localPlayer, "isWorking") then
         local xp = getElementData(localPlayer, "farm_xp") or 0
         local rank = getElementData(localPlayer, "rank") or 1
-        local goal = (rank == 1) and 50 or 150
+        local goal = (rank == 1) and 5 or 150
         drawJobHud("ФЕРМА", rank, xp, goal)
         
     -- Для ПОЛИЦИИ

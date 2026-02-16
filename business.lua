@@ -16,6 +16,7 @@ end)
 -------------КАФЕШКА------------------------------------------------------
 local m1x, m1y, m1z = 1366.39, 248.8, 18.5
 local marker1 = createMarker(m1x, m1y, m1z, "cylinder", 1.5, 255, 255, 0, 150)
+local foodBlip = createBlip(m1x, m1y, m1z, 29, 2, 255, 255, 255, 255, 0, 300)
 
 addEvent("onPlayerBuyFood", true)
 addEventHandler("onPlayerBuyFood", root, function(item, price)
