@@ -33,7 +33,7 @@ addEventHandler("onPlayerBuyFood", root, function(item, price)
     -- ПРОВЕРКА: Если игрок уже болен (любой болезнью), новое отравление не даем
     if not getElementData(client, "disease") then
         setElementData(client, "disease", "Poison")
-        outputChatBox("🤢 Кажется, бургер был несвежим... Вы отравились!", client, 255, 0, 0)
+        outputChatBox("Кажется, бургер был несвежим... Вы отравились!", client, 255, 0, 0)
     end
 end
             outputChatBox("Приятного аппетита! В кафе осталось " .. cafeStock .. " порций.", client, 0, 255, 0)
@@ -124,6 +124,51 @@ addEventHandler("onMarkerHit", sacrificeMarker, function(player)
         end
     end
 end)
+--=========================================================================
+-------------------------БОЛЬНИЦА------------------------------------------
+local hx, hy, hz = 1242.254, 328.090, 18.8 
+local hospitalMarker = createMarker(hx, hy, hz, "cylinder", 2.0, 200, 255, 200, 150)
+
+local medicalPrices = {
+    ["Flu"] = 50,      -- Простуда (дешево)
+    ["Poison"] = 150,  -- Отравление (средне)
+    ["Anemia"] = 300   -- Анемия (дорого, так как это сложный дебафф)
+}
+
+function autoCure(player)
+    if getElementType(player) == "player" and not isPedInVehicle(player) then
+        local disease = getElementData(player, "disease")
+        
+        -- Проверяем, болен ли игрок чем-то из нашего списка
+        if disease and medicalPrices[disease] then
+            local price = medicalPrices[disease]
+            local diseaseName = (disease == "Flu" and "Простуда") or (disease == "Poison" and "Отравление") or "Анемия"
+            
+            -- Проверяем деньги у игрока
+            if getPlayerMoney(player) >= price then
+                -- ЭКОНОМИКА
+                takePlayerMoney(player, price)
+                bankBalance = (bankBalance or 0) + price
+                setElementData(resourceRoot, "serverBank", bankBalance)
+                
+                -- ЛЕЧЕНИЕ: Снимаем только статус болезни
+                setElementData(player, "disease", false)
+                
+                outputChatBox("[АПТЕКА] Вы купили лекарство от болезни: " .. diseaseName, player, 0, 255, 0)
+                outputChatBox("Стоимость: $" .. price .. ". Деньги ушли в бюджет штата.", player, 200, 255, 200)
+                outputChatBox("Не забудьте восстановить ХП в Кафе!", player, 255, 200, 0)
+            else
+                outputChatBox("[АПТЕКА] Лекарство от " .. diseaseName .. " стоит $" .. price .. ". У вас не хватает денег!", player, 255, 0, 0)
+            end
+        else
+            outputChatBox("[АПТЕКА] Вы здоровы! Лекарства не требуются.", player, 0, 255, 255)
+        end
+    end
+end
+
+addEventHandler("onMarkerHit", hospitalMarker, autoCure)
+
+
 
 -- Координаты для текста над красным маркером
 local tx, ty, tz = 1344.622, 282.463, 20.5 

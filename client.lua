@@ -52,6 +52,52 @@ addEventHandler("onClientGUIClick", root, function()
 end)
 
 -- =============================================================================
+-- БОЛЬНИЦА
+-- =============================================================================
+local hx, hy, hz = 1242.254, 328.090, 20.5
+
+addEventHandler("onClientRender", root, function()
+    local px, py, pz = getElementPosition(localPlayer)
+    if getDistanceBetweenPoints3D(hx, hy, hz, px, py, pz) < 20 then
+        local sx, sy = getScreenFromWorldPosition(hx, hy, hz)
+        if sx and sy then
+            dxDrawText("АПТЕЧНЫЙ ПУНКТ\nЛекарства от $50 до $300", sx, sy, sx, sy, tocolor(0, 255, 100, 255), 1.5, "default-bold", "center")
+
+        end
+    end
+end)
+-- =============================================================================
+
+-- client.lua (Client-side)
+
+addEventHandler("onClientRender", root, function()
+    -- Проверяем, не скрыт ли интерфейс (например, кнопкой F11 или входом в интерьер)
+    if isPlayerHudComponentVisible("health") then
+        local hp = getElementHealth(localPlayer)
+        -- Округляем до целого числа
+        local hpText = tostring(math.floor(hp))
+        
+        -- Стандартные координаты полоски ХП в GTA SA (примерные для разных разрешений)
+        -- В идеале это нужно вычислять через guiGetScreenSize, но для теста:
+        local screenW, screenH = guiGetScreenSize()
+        
+        -- Позиция текста (подбираем под полоску справа вверху)
+        local x = screenW * 0.815 -- Смещение по горизонтали
+        local y = screenH * 0.065 -- Смещение по вертикали (чуть выше брони)
+
+        -- Рисуем тень для читаемости
+        dxDrawText(hpText, x + 1, y + 1, x + 1, y + 1, tocolor(0, 0, 0, 255), 1.5, "default-bold", "left", "top")
+        -- Рисуем само число (белым или красным)
+        local color = tocolor(255, 255, 255, 255)
+        if hp <= 20 then color = tocolor(255, 0, 0, 255) end -- Краснеет при низком ХП
+
+        dxDrawText(hpText, x, y, x, y, color, 1.5, "default-bold", "left", "top")
+    end
+end)
+
+
+
+-- =============================================================================
 -- 3D ТЕКСТЫ (Оптимизированный рендер)
 -- =============================================================================
 
@@ -84,5 +130,42 @@ addEventHandler("onClientRender", root, function()
         end
     end
 end)
+
+--================ФЕРМА РАНГИ====================================
+addEventHandler("onClientRender", root, function()
+    local faction = getElementData(localPlayer, "faction")
+    
+    -- Для ФЕРМЕРА
+    if faction == "Farmer" and getElementData(localPlayer, "isWorking") then
+        local xp = getElementData(localPlayer, "farm_xp") or 0
+        local rank = getElementData(localPlayer, "rank") or 1
+        local goal = (rank == 1) and 50 or 150
+        drawJobHud("ФЕРМА", rank, xp, goal)
+        
+    -- Для ПОЛИЦИИ
+    elseif faction == "Police" then
+        local xp = getElementData(localPlayer, "police_xp") or 0
+        local rank = getElementData(localPlayer, "rank") or 1
+        local goal = (rank == 1) and 10 or (rank == 2) and 25 or 50
+        drawJobHud("ПОЛИЦИЯ", rank, xp, goal)
+    end
+end)
+
+-- Вспомогательная функция отрисовки (чтобы не дублировать код)
+function drawJobHud(name, rank, xp, goal)
+    local screenW, screenH = guiGetScreenSize()
+    local x, y = screenW * 0.7, screenH * 0.2
+    local progress = math.min(100, (xp / goal) * 100)
+    
+    dxDrawRectangle(x, y, 200, 65, tocolor(0, 0, 0, 150))
+    dxDrawText(name .. " (Ранг " .. rank .. ")", x + 10, y + 5, 0, 0, tocolor(255, 255, 255, 255), 1.1, "default-bold")
+    dxDrawText("Прогресс: " .. xp .. " / " .. goal, x + 10, y + 25, 0, 0, tocolor(255, 255, 0, 255), 1.0, "default")
+    dxDrawRectangle(x + 10, y + 45, 180, 8, tocolor(50, 50, 50, 255))
+    dxDrawRectangle(x + 10, y + 45, 1.8 * progress, 8, tocolor(0, 255, 0, 255))
+end
+
+
+
+
 
 

@@ -49,6 +49,11 @@ function createEvidence(victim, weapon, killer)
     addEventHandler("onColShapeHit", col, function(hitElement)
         if getElementType(hitElement) == "player" then
             if getElementData(hitElement, "faction") == "Police" then
+                if type(updatePoliceXP) == "function" then
+                updatePoliceXP(hitElement)
+            else
+                outputServerLog("ERROR: Функция updatePoliceXP не найдена!")
+            end
                 outputChatBox("--- [ПОЛИЦИЯ] УЛИКА СОБРАНА ---", hitElement, 0, 100, 255)
                 outputChatBox("Жертва: " .. vName, hitElement, 255, 255, 255)
                 outputChatBox("Оружие/Причина (ID): " .. deathReason, hitElement, 255, 255, 255)
@@ -84,10 +89,19 @@ function handlePlayerDeath(ammo, killer, weapon, bodypart)
     -- 2. Обнуление данных через 100мс
     setTimer(function()
         if isElement(player) then
+
+            setElementData(player, "faction", false)
+            setElementData(player, "rank", 0)
+            setElementData(player, "repairedCars", 0)
+            setElementData(player, "farm_xp", 0)
+            setElementData(player, "farm_rank", 1)
+
             setElementData(player, "isFactoryWorker", false)
+            setElementData(player, "isFactoryWorker2", false)
             setElementData(player, "isDelivery", false)
             setElementData(player, "disease", false)
 
+            if markerFarm2 then setElementVisibleTo(markerFarm2, player, false) end
             if loadFarm1 then setElementVisibleTo(loadFarm1, player, false) end
             if loadFarm2 then setElementVisibleTo(loadFarm2, player, false) end
             if loadFarm3 then setElementVisibleTo(loadFarm3, player, false) end
@@ -103,7 +117,7 @@ function handlePlayerDeath(ammo, killer, weapon, bodypart)
                     setElementData(house, "owner", false)
                 end
             end
-            outputChatBox("Вы погибли. Имущество аннулировано.", player, 255, 0, 0)
+            outputChatBox("Вы погибли. Вы потеряли должность во фракции и всё имущество.", player, 255, 0, 0)
         end
     end, 100, 1)
     

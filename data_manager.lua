@@ -1,6 +1,6 @@
 -- data_manager.lua (Server-side)
 bankBalance = 1000
-factoryStock = 0
+factoryStock = 50
 cafeStock = 0
 detailsStock = 0
 serviceStock = 0

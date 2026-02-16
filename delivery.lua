@@ -101,13 +101,13 @@ function onFinishDelivery(player)
                 setElementVisibleTo(loadFarm1, player, true)
                 setElementVisibleTo(loadFarm2, player, true)
                 setElementVisibleTo(loadFarm3, player, true)
-                outputChatBox("[ДОСТАВКА] Продукты в Кафе! +$50. Езжай за новой партией.", thePlayer, 0, 255, 0)
+                outputChatBox("[ДОСТАВКА] Продукты в Кафе! +$50. Езжай за новой партией.", Player, 0, 255, 0)
             elseif job == "parts" then
-                serviceStock = (serviceStock or 0) + 10
+                serviceStock = (serviceStock or 0) + 5
                 setElementData(resourceRoot, "serviceStock", serviceStock)
                 setElementVisibleTo(finishService, player, false)
                 setElementVisibleTo(returnParts, player, true)
-                outputChatBox("[ДОСТАВКА] Запчасти в Сервис! +$50. Вернись в Цех за новой партией (белый маркер).", thePlayer, 0, 255, 0)
+                outputChatBox("[ДОСТАВКА] Запчасти в Сервисе! +$50. Вернись в Цех за новой партией (белый маркер).", Player, 0, 255, 0)
             end
         else
             outputChatBox("[ДОСТАВКА] Ты слишком слаб!", player, 255, 0, 0)

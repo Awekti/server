@@ -11,10 +11,10 @@ setTimer(function()
             local rand = math.random(1, 100)
             if rand <= fluChance then
                 setElementData(player, "disease", "Flu")
-                outputChatBox("⚠️ [ЗДОРОВЬЕ] Вы подхватили Простуду!", player, 255, 100, 100)
+                outputChatBox("[ЗДОРОВЬЕ] Вы подхватили Простуду!", player, 255, 100, 100)
             elseif rand <= (fluChance + anemiaChance) then
                 setElementData(player, "disease", "Anemia")
-                outputChatBox("⚠️ [ЗДОРОВЬЕ] У вас Анемия! Сил стало меньше.", player, 255, 100, 100)
+                outputChatBox("[ЗДОРОВЬЕ] У вас Анемия! Сил стало меньше.", player, 255, 100, 100)
             end
         end
     end
@@ -25,30 +25,39 @@ setTimer(function()
     for _, player in ipairs(getElementsByType("player")) do
         local d = getElementData(player, "disease")
         
-        -- Если игрок болен и жив
         if d and not isPedDead(player) then
             local hp = getElementHealth(player)
+            local damage = 0
             
-            if d == "Flu" then
-                setElementHealth(player, math.max(1, hp - 2))
-                outputChatBox("🤢 Вы кашляете... (-2 HP)", player, 255, 150, 150)
-                setPedAnimation(player, "FOOD", "EAT_Burger", 3000, false, true, false, false)
-            --setPedAnimation(player, "Блок", "Анимация", время_мс, цикл, перемещение, прерываемость, заморозка)
+            if d == "Flu" then damage = 2
+            elseif d == "Poison" then damage = 10 end
 
-            elseif d == "Poison" then
-                setElementHealth(player, math.max(1, hp - 5))
-                outputChatBox("🤢 Вас тошнит после еды... (-5 HP)", player, 255, 0, 0)
-                setPedAnimation(player, "FOOD", "EAT_Burger", 3000, false, true, false, false)
+            if damage > 0 then
+                local newHP = hp - damage
+                
+                if newHP <= 0 then
+                    -- Если ХП должно стать 0 или меньше — УБИВАЕМ ПРИНУДИТЕЛЬНО
+                    killPed(player) 
+                    outputChatBox("[СМЕРТЬ] Ваше тело не выдержало болезни...", player, 255, 0, 0)
+                else
+                    setElementHealth(player, newHP)
+                    if d == "Flu" then
+                        outputChatBox("Вы кашляете... (-2 HP)", player, 255, 150, 150)
+                        --setPedAnimation(player, "FOOD", "EAT_Burger", 1000, false, false, false, false)
+                    elseif d == "Poison" then
+                        outputChatBox("Вас тошнит... (-10 HP)", player, 255, 0, 0)
+                    end
+                end
+            end
 
             elseif d == "Anemia" then
                 if hp > 50 then 
                     setElementHealth(player, 50) 
-                    outputChatBox("🩸 Анемия ограничивает ваше здоровье! (Макс. 50 HP)", player, 255, 50, 50)
+                    outputChatBox("Анемия ограничивает ваше здоровье! (Макс. 50 HP)", player, 255, 50, 50)
                 end
             end
         end
-    end
-end, 30000, 0)
+    end, 60000, 0)
 
 -- Лог для консоли (F8)
 addEventHandler("onElementDataChange", root, function(dataName, oldValue, newValue)
@@ -74,7 +83,7 @@ setTimer(function()
                 local now = getTickCount()
                 
                 if now - lastMsg > 10000 then 
-                    outputChatBox("🩸 [АНИМИЯ] Ваше тело слишком слабо! Здоровье не может подняться выше 50.", player, 255, 50, 50)
+                    outputChatBox("[АНИМИЯ] Ваше тело слишком слабо! Здоровье не может подняться выше 50.", player, 255, 50, 50)
                     setElementData(player, "lastAnemiaMsg", now, false) -- false, чтобы не синхронизировать с клиентом
                 end
             end

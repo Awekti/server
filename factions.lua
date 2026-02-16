@@ -7,6 +7,13 @@ govSkins = {
     [5] = 147  -- Мэр (Статный старик в костюме)
 }
 
+farmSkins = { [1] = 158,
+              [2] = 159, 
+              [3] = 160, 
+              [4] = 161,
+              [5] = 133
+}
+
 -- Скины для других фракций
 local factionDefaultSkins = {
     ["Medic"] = 274,
@@ -21,9 +28,12 @@ function setJob(player, jobName)
     
     setElementData(player, "faction", jobName)
     setElementData(player, "rank", 1)
-    
-    if jobName == "Gov" then
-        setElementModel(player, 171)
+    setElementData(player, "farm_xp", 0) -- Для фермеров
+
+     if jobName == "Farmer" then
+        setElementModel(player, farmSkins[1])
+    elseif jobName == "Gov" then
+        setElementModel(player, govSkins[1] or 171)
         checkGovPromotion(player) -- Проверяем, может он сразу 4 ранг
     elseif jobName == "Medic" then
         setElementModel(player, 274)
@@ -111,7 +121,7 @@ addCommandHandler("cure1", function(player, cmd, targetName)
     -- Анимация облегчения для пациента через 3 секунды
     setTimer(function()
         if isElement(target) then 
-            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 3000, false, false, false, false)
         end
     end, 3000, 1)
 
@@ -129,11 +139,11 @@ addCommandHandler("cure2", function(player, cmd, targetName)
     setElementData(target, "disease", false)
     
     -- Анимация осмотра для медика
-    setPedAnimation(player, "MEDIC", "CPR", 3000, false, false, false, false)
+    setPedAnimation(player, "MEDIC", "CPR", 5000, false, false, false, false)
     -- Анимация облегчения для пациента через 3 секунды
     setTimer(function()
         if isElement(target) then 
-            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 3000, false, false, false, false)
         end
     end, 3000, 1)
 
@@ -155,7 +165,7 @@ addCommandHandler("cure3", function(player, cmd, targetName)
     -- Анимация облегчения для пациента через 3 секунды
     setTimer(function()
         if isElement(target) then 
-            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 1000, false, false, false, false)
+            setPedAnimation(target, "PLAYER_PLAYBACK", "STREETWALK_IDLE", 3000, false, false, false, false)
         end
     end, 3000, 1)
 
@@ -254,3 +264,41 @@ setTimer(function()
         end
     end
 end, 30000, 0)
+
+--=============================ПОЛИЦИЯ======================================
+
+-- factions.lua (Server-side)
+
+-- Таблица рангов полиции
+local policeRanks = {
+    [1] = { name = "Кадет", goal = 0, skin = 280 },
+    [2] = { name = "Офицер", goal = 10, skin = 281 },
+    [3] = { name = "Детектив", goal = 25, skin = 282 }
+}
+
+-- Функция обновления опыта полиции (вызывай её при сборе улики)
+function updatePoliceXP(player)
+    if getElementData(player, "faction") ~= "Police" then return end
+    
+    local xp = (getElementData(player, "police_xp") or 0) + 1
+    local rank = getElementData(player, "rank") or 1
+    setElementData(player, "police_xp", xp)
+    outputServerLog("POLICE XP: " .. getPlayerName(player) .. " получил опыт. Всего: " .. xp)
+    
+    -- Проверка повышения до 2 ранга (10 улик)
+    if rank == 1 and xp >= 10 then
+        setElementData(player, "rank", 2)
+        setElementModel(player, policeRanks[2].skin)
+        outputChatBox("[ПОЛИЦИЯ] Повышение! Ранг 2: Офицер. Получена премия $200.", player, 0, 255, 0)
+        givePlayerMoney(player, 200)
+    end
+    
+    -- Проверка повышения до 3 ранга (25 улик)
+    if rank == 2 and xp >= 25 then
+        setElementData(player, "rank", 3)
+        setElementModel(player, policeRanks[3].skin)
+        outputChatBox("[ПОЛИЦИЯ] Повышение! Ранг 3: Детектив. Получена премия $500.", player, 0, 255, 0)
+        givePlayerMoney(player, 500)
+    end
+end
+
