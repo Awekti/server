@@ -1,42 +1,51 @@
-cafeStock = 50
-bankBalance = 1000
-detailsStock = 50
-serviceStock = 50
 
-setElementData(resourceRoot, "cafeStock", cafeStock)
-setElementData(resourceRoot, "sparePartsStock", sparePartsStock)
-setElementData(resourceRoot, "serviceStock", serviceStock)
-setElementData(resourceRoot, "detailsStock", detailsStock or 0)
+-- Список всех кафе. Просто добавляй сюда новые координаты {x, y, z}
+local cafeLocations = {
+    {1366.39, 248.8, 18.5},
+    {203.354, -202.701, 0.6}, -- Твоя новая точка
+    -- {x, y, z}, 
+}
 
--- Функция: Проверка баланса банка (команда /bank)
-addCommandHandler("bank", function(player)
-    outputChatBox("Текущий баланс банка штата: $" .. bankBalance, player, 255, 200, 0)
-end)
+-- Создаем маркеры и блипы циклом
+for i, loc in ipairs(cafeLocations) do
+    local x, y, z = loc[1], loc[2], loc[3]
+    
+    local marker = createMarker(x, y, z, "cylinder", 1.5, 255, 255, 0, 150)
+    createBlip(x, y, z, 29, 2, 255, 255, 255, 255, 0, 300)
 
--------------КАФЕШКА------------------------------------------------------
-local m1x, m1y, m1z = 1366.39, 248.8, 18.5
-local marker1 = createMarker(m1x, m1y, m1z, "cylinder", 1.5, 255, 255, 0, 150)
-local foodBlip = createBlip(m1x, m1y, m1z, 29, 2, 255, 255, 255, 255, 0, 300)
+    -- Привязываем событие открытия меню к каждому созданному маркеру
+    addEventHandler("onMarkerHit", marker, function(player)
+        if getElementType(player) == "player" and not isPedInVehicle(player) then
+            triggerClientEvent(player, "openCafeMenu", player)
+        end
+    end)
+end
 
+-- Обработка покупки еды (остается общей для всех)
 addEvent("onPlayerBuyFood", true)
 addEventHandler("onPlayerBuyFood", root, function(item, price)
+    local cafeStock = getElementData(resourceRoot, "cafeStock") or 0
+    local bankBalance = getElementData(resourceRoot, "serverBank") or 0
+
     if cafeStock >= 1 then
         if getPlayerMoney(client) >= price then
             cafeStock = cafeStock - 1
             setElementData(resourceRoot, "cafeStock", cafeStock)
     
-            takePlayerMoney(client, price) -- Забираем у игрока
-            bankBalance = bankBalance + price -- КЛАДЕМ В БАНК
+            takePlayerMoney(client, price)
+            bankBalance = bankBalance + price
             setElementData(resourceRoot, "serverBank", bankBalance)
         
             setElementHealth(client, getElementHealth(client) + 30)
-            if math.random(1, 100) <= 5 then -- шанс отравиться
-    -- ПРОВЕРКА: Если игрок уже болен (любой болезнью), новое отравление не даем
-    if not getElementData(client, "disease") then
-        setElementData(client, "disease", "Poison")
-        outputChatBox("Кажется, бургер был несвежим... Вы отравились!", client, 255, 0, 0)
-    end
-end
+
+            -- Шанс отравления
+            if math.random(1, 100) <= 5 then 
+                if not getElementData(client, "disease") then
+                    setElementData(client, "disease", "Poison")
+                    outputChatBox("Кажется, бургер был несвежим... Вы отравились!", client, 255, 0, 0)
+                end
+            end
+
             outputChatBox("Приятного аппетита! В кафе осталось " .. cafeStock .. " порций.", client, 0, 255, 0)
             outputChatBox("Вы поели. $" .. price .. " ушли в бюджет банка.", client, 0, 255, 0)
         else
@@ -47,25 +56,25 @@ end
     end
 end)
 
-addEventHandler("onMarkerHit", marker1, function(player)
-    if getElementType(player) == "player" then
-        triggerClientEvent(player, "openCafeMenu", player)
-    end
-end)
+-- addEventHandler("onMarkerHit", cafeLocations, function(player)
+--     if getElementType(player) == "player" then
+--         triggerClientEvent(player, "openCafeMenu", player)
+--     end
+-- end)
 
-local cx, cy, cz = 1366.39, 248.8, 20.5 
-addEventHandler("onClientRender", root, function()
-    -- (твой старый код отрисовки банка и склада завода)
+-- local cx, cy, cz = 1366.39, 248.8, 20.5 
+-- addEventHandler("onClientRender", root, function()
+--     -- (твой старый код отрисовки банка и склада завода)
     
-    local px, py, pz = getElementPosition(localPlayer)
-    if getDistanceBetweenPoints3D(cx, cy, cz, px, py, pz) < 15 then
-        local stock = getElementData(resourceRoot, "cafeStock") or 0
-        local sx, sy = getScreenFromWorldPosition(cx, cy, cz)
-        if sx and sy then
-            dxDrawText("ПРОДУКТОВ В КАФЕ: " .. stock, sx, sy, sx, sy, tocolor(255, 255, 0, 255), 1.2, "default-bold", "center")
-        end
-    end
-end)
+--     local px, py, pz = getElementPosition(localPlayer)
+--     if getDistanceBetweenPoints3D(cx, cy, cz, px, py, pz) < 15 then
+--         local stock = getElementData(resourceRoot, "cafeStock") or 0
+--         local sx, sy = getScreenFromWorldPosition(cx, cy, cz)
+--         if sx and sy then
+--             dxDrawText("ПРОДУКТОВ В КАФЕ: " .. stock, sx, sy, sx, sy, tocolor(255, 255, 0, 255), 1.2, "default-bold", "center")
+--         end
+--     end
+-- end)
 
 
 -------------24/7--------------------------------------------------------

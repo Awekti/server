@@ -1,9 +1,8 @@
--- data_manager.lua (Server-side)
 bankBalance = 1000
 factoryStock = 50
-cafeStock = 0
-detailsStock = 0
-serviceStock = 0
+cafeStock = 50
+detailsStock = 50
+serviceStock = 50
 
 -- Обновление всех 3D текстов одной функцией
 function syncEconomyData()
@@ -13,3 +12,4 @@ function syncEconomyData()
     setElementData(resourceRoot, "detailsStock", detailsStock)
     setElementData(resourceRoot, "serviceStock", serviceStock)
 end
+syncEconomyData()

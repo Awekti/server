@@ -104,34 +104,34 @@ end)
 -- =============================================================================
 
 -- Конфиг точек: {x, y, z, текст, данные_из_БД, цвет, дистанция}
-local LABEL_POINTS = {
-    {1344.622, 282.463, 20.8, "БАНК ШТАТА\nЖертва за $10", "serverBank", tocolor(255, 50, 50, 255), 20},
-    {-1.442, 74.723, 4.0, "СКЛАД ЗАВОДА", "factoryStock", tocolor(100, 200, 255, 255), 15},
-    {1366.39, 248.8, 21.5, "ПРОДУКТОВ В КАФЕ", "cafeStock", tocolor(255, 255, 0, 255), 20},
-    {1348.015, 342.812, 21.5, "СКЛАД ДЕТАЛЕЙ", "detailsStock", tocolor(100, 200, 255, 255), 20}
-}
+-- local LABEL_POINTS = {
+--     {1344.622, 282.463, 20.8, "БАНК ШТАТА\nЖертва за $10", "serverBank", tocolor(255, 50, 50, 255), 20},
+--     {-1.442, 74.723, 4.0, "СКЛАД ЗАВОДА", "factoryStock", tocolor(100, 200, 255, 255), 15},
+--     {1366.39, 248.8, 21.5, "ПРОДУКТОВ В КАФЕ", "cafeStock", tocolor(255, 255, 0, 255), 20},
+--     {1348.015, 342.812, 21.5, "СКЛАД ДЕТАЛЕЙ", "detailsStock", tocolor(100, 200, 255, 255), 20}
+-- }
 
-addEventHandler("onClientRender", root, function()
-    local px, py, pz = getElementPosition(localPlayer)
+-- addEventHandler("onClientRender", root, function()
+--     local px, py, pz = getElementPosition(localPlayer)
     
-    for _, pt in ipairs(LABEL_POINTS) do
-        local dist = getDistanceBetweenPoints3D(pt[1], pt[2], pt[3], px, py, pz)
+--     for _, pt in ipairs(LABEL_POINTS) do
+--         local dist = getDistanceBetweenPoints3D(pt[1], pt[2], pt[3], px, py, pz)
         
-        if dist < pt[7] then
-            local sx, sy = getScreenFromWorldPosition(pt[1], pt[2], pt[3])
-            if sx and sy then
-                -- Динамически подтягиваем данные (число) из ElementData
-                local val = getElementData(resourceRoot, pt[5]) or 0
-                local finalText = pt[4] .. ": " .. val
+--         if dist < pt[7] then
+--             local sx, sy = getScreenFromWorldPosition(pt[1], pt[2], pt[3])
+--             if sx and sy then
+--                 -- Динамически подтягиваем данные (число) из ElementData
+--                 local val = getElementData(resourceRoot, pt[5]) or 0
+--                 local finalText = pt[4] .. ": " .. val
                 
-                -- Тень
-                dxDrawText(finalText, sx + 1, sy + 1, sx, sy, tocolor(0, 0, 0, 200), 1.2, "default-bold", "center")
-                -- Основной текст
-                dxDrawText(finalText, sx, sy, sx, sy, pt[6], 1.2, "default-bold", "center")
-            end
-        end
-    end
-end)
+--                 -- Тень
+--                 dxDrawText(finalText, sx + 1, sy + 1, sx, sy, tocolor(0, 0, 0, 200), 1.2, "default-bold", "center")
+--                 -- Основной текст
+--                 dxDrawText(finalText, sx, sy, sx, sy, pt[6], 1.2, "default-bold", "center")
+--             end
+--         end
+--     end
+-- end)
 
 --================ФЕРМА РАНГИ====================================
 addEventHandler("onClientRender", root, function()

@@ -1,5 +1,3 @@
--- farm.lua (Server-side)
-
 -- 1. Координаты (Проверь Z, поднял до 2.5 для надежности)
 local f1_Start = {-4.467, 67.347, 3.117}
 local f1_Cargos = { {13.132, 74.044, 2.5}, {13.541, 63.487, 2.5} }
@@ -48,6 +46,7 @@ function onFarmPickup(player)
 
     local rank = getElementData(player, "rank") or 1
     local isFirstField = (source == pick1)
+    outputChatBox("Вы фермер! (Ранг 1: Неуверенная тяпка)", player, 255, 200, 0)
 
     -- Чистка (скрываем всё перед включением)
     setElementVisibleTo(m_f1_c1, player, false)
@@ -128,7 +127,7 @@ function onFarmDrop(player)
             setElementData(player, "rank", 2)
             -- Вызываем функцию из factions.lua для смены скина
             if type(checkGovPromotion) == "function" then checkGovPromotion(player) end 
-            outputChatBox("ПОВЫШЕНИЕ! Теперь ты Опытный фермер (Ранг 2).", player, 0, 255, 0)
+            outputChatBox("ПОВЫШЕНИЕ! Теперь ты Решительный начес (Ранг 2).", player, 0, 255, 0)
         end
         
         -- Дебафф здоровья и Бонус 2 ранга
